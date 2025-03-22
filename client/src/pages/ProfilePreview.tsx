@@ -31,31 +31,15 @@ export default function ProfilePreview() {
   });
 
   useEffect(() => {
-    // Get generated profile from localStorage
-    const storedProfile = localStorage.getItem('generatedProfile');
+    const storedProfile = localStorage.getItem('userProfile');
     if (storedProfile) {
       try {
-        const parsed = JSON.parse(storedProfile) as GeneratedProfile;
-        setGeneratedProfile(parsed);
-
-        // Update profile with generated data
-        setProfile(prev => ({
-          ...prev,
-          bio: parsed.bio,
-          interests: parsed.interests,
-        }));
+        const parsed = JSON.parse(storedProfile);
+        setProfile(parsed);
       } catch (error) {
         console.error("Error parsing stored profile:", error);
       }
     }
-
-    // Auto-generate username and password for demo
-    const randomId = Math.floor(Math.random() * 10000);
-    setProfile(prev => ({
-      ...prev,
-      username: `user${randomId}`,
-      password: `pass${randomId}`,
-    }));
   }, []);
 
   const handleEditProfile = () => {
