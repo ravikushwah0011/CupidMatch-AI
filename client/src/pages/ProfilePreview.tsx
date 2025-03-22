@@ -64,6 +64,8 @@ export default function ProfilePreview() {
   
   const handleCreateAccount = async () => {
     try {
+      // Ensure interests is never undefined
+      const interests = profile.interests || [];
       await register({
         username: profile.username,
         password: profile.password,
@@ -71,11 +73,11 @@ export default function ProfilePreview() {
         age: profile.age,
         gender: profile.gender,
         location: profile.location,
-        bio: profile.bio,
+        bio: profile.bio || "",
         occupation: profile.occupation,
         education: profile.education,
         lookingFor: profile.lookingFor,
-        interests: profile.interests,
+        interests: interests,
         profileVideoUrl: profile.profileVideoUrl,
       });
       toast({
