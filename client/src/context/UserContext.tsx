@@ -57,11 +57,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   
   const { data: user, isLoading, refetch } = useQuery<User | null>({
     queryKey: ['/api/auth/me'],
-    onError: () => {
-      // User is not authenticated, setting to null
-      queryClient.setQueryData(['/api/auth/me'], null);
-    },
     retry: false,
+    staleTime: 0,
   });
 
   const loginMutation = useMutation({

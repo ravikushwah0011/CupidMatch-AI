@@ -62,8 +62,34 @@ export default function ProfilePreview() {
     navigate("/profile-creation");
   };
   
-  const handleCreateAccount = () => {
-    register(profile);
+  const handleCreateAccount = async () => {
+    try {
+      await register({
+        username: profile.username,
+        password: profile.password,
+        profileName: profile.profileName || "New User",
+        age: profile.age,
+        gender: profile.gender,
+        location: profile.location,
+        bio: profile.bio,
+        occupation: profile.occupation,
+        education: profile.education,
+        lookingFor: profile.lookingFor,
+        interests: profile.interests,
+        profileVideoUrl: profile.profileVideoUrl,
+      });
+      toast({
+        title: "Registration successful!",
+        description: "Your profile has been created.",
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast({
+        title: "Registration failed",
+        description: "Please try again with different details.",
+        variant: "destructive",
+      });
+    }
   };
   
   const handleBack = () => {
