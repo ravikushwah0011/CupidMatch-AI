@@ -159,7 +159,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.post('/api/auth/register', async (req, res) => {
     try {
+      console.log('Registration request body:', req.body);
       const userData = insertUserSchema.parse(req.body);
+      console.log('Parsed user data:', userData);
+      
       const existingUser = await storage.getUserByUsername(userData.username);
       
       if (existingUser) {
@@ -172,15 +175,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       req.login(user, (err) => {
         if (err) {
+          console.error('Error during login after registration:', err);
           return res.status(500).json({ message: "Error during login after registration" });
         }
         return res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
+      console.error('Registration error:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid user data", errors: error.errors });
       }
-      return res.status(500).json({ message: "Error registering user" });
+      return res.status(500).json({ message: "Error registering user", error: error instanceof Error ? error.message : String(error) });
     }
   });
 
