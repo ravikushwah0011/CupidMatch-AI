@@ -98,23 +98,29 @@ export class DatabaseStorage implements IStorage {
     // Add current user ID to exclude list
     matchedUserIds.push(userId);
     
-    // If there are no matchedUserIds (only the current user), we need a simpler query
+    // If there are no matchedUserIds other than the current user, we need a simpler query
     if (matchedUserIds.length === 1) {
       return await db.select()
         .from(users)
         .where(not(eq(users.id, userId)));
     }
     
-    // Get all users not in the exclude list
+    // Construct a dynamic query to exclude all matched user IDs
+    // This avoids the previous approach which had type issues
+    const conditions = [];
+    
+    // Add condition to exclude current user
+    conditions.push(not(eq(users.id, userId)));
+    
+    // Add conditions to exclude all matched users
+    for (const id of matchedUserIds.filter(id => id !== userId)) {
+      conditions.push(not(eq(users.id, id)));
+    }
+    
+    // Use and() to combine all conditions
     return await db.select()
       .from(users)
-      .where(not(eq(users.id, userId)))
-      .where(builder => {
-        for (const id of matchedUserIds.filter(id => id !== userId)) {
-          builder.and(not(eq(users.id, id)));
-        }
-        return builder;
-      });
+      .where(and(...conditions));
   }
 
   async createMatch(insertMatch: InsertMatch): Promise<Match> {

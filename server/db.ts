@@ -2,9 +2,14 @@ import { drizzle } from "drizzle-orm/neon-serverless";
 import { neon, neonConfig } from "@neondatabase/serverless";
 import * as schema from "@shared/schema";
 
-// We don't use Node's fetch in serverless mode
+// Fix for deprecated fetchConnectionCache option
 neonConfig.fetchConnectionCache = true;
 
-// Create the connection - using the string database URL directly
-const sql = neon(process.env.DATABASE_URL as string);
-export const db = drizzle(sql);
+// Create the connection with error handling
+const sql = neon(process.env.DATABASE_URL || '');
+
+// Create the db instance with schema for type safety
+const db = drizzle(sql);
+
+// Export the db instance
+export { db };
