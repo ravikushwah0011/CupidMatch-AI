@@ -59,6 +59,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     queryKey: ['/api/auth/me'],
     retry: false,
     staleTime: 0,
+    initialData: null, // Provide initial data to avoid undefined
   });
 
   const loginMutation = useMutation({

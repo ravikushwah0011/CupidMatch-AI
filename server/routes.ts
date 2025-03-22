@@ -84,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const connections: Connection[] = [];
 
   wss.on('connection', (ws) => {
-    let userId: number | null = null;
+    let userId: number = 0; // Initialize with 0 instead of null
 
     ws.on('message', async (message) => {
       try {
@@ -92,14 +92,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Handle authentication
         if (data.type === 'auth' && data.userId) {
-          userId = data.userId;
+          userId = Number(data.userId); // Ensure it's a number
           // Add to connections
           connections.push({ userId, socket: ws });
           console.log(`User ${userId} connected via WebSocket`);
         }
         
         // Handle chat messages
-        if (data.type === 'message' && userId && data.matchId && data.content) {
+        if (data.type === 'message' && userId !== 0 && data.matchId && data.content) {
           const newMessage = await storage.createMessage({
             matchId: data.matchId,
             senderId: userId,
@@ -145,7 +145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
 
     ws.on('close', () => {
-      if (userId) {
+      if (userId !== 0) {
         // Remove from connections
         const index = connections.findIndex(conn => conn.userId === userId);
         if (index !== -1) {
