@@ -130,12 +130,12 @@ export default function ProfilePreview() {
         <div className="profile-interests mb-6">
           <h4 className="font-semibold mb-2">Interests</h4>
           <div className="flex flex-wrap gap-2">
-            {profile.interests.map((interest, index) => (
+            {Array.isArray(profile.interests) && profile.interests.map((interest, index) => (
               <span key={index} className="bg-neutral-100 px-3 py-1 rounded-full text-sm">
                 {interest}
               </span>
             ))}
-            {profile.interests.length === 0 && (
+            {(!profile.interests || profile.interests.length === 0) && (
               <span className="text-neutral-500 text-sm">AI will suggest interests based on your responses.</span>
             )}
           </div>
