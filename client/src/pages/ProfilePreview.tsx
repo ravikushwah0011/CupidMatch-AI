@@ -29,7 +29,7 @@ export default function ProfilePreview() {
     interests: [] as string[],
     profileVideoUrl: "https://example.com/sample-video.mp4", // Placeholder URL
   });
-  
+
   useEffect(() => {
     // Get generated profile from localStorage
     const storedProfile = localStorage.getItem('generatedProfile');
@@ -37,7 +37,7 @@ export default function ProfilePreview() {
       try {
         const parsed = JSON.parse(storedProfile) as GeneratedProfile;
         setGeneratedProfile(parsed);
-        
+
         // Update profile with generated data
         setProfile(prev => ({
           ...prev,
@@ -48,7 +48,7 @@ export default function ProfilePreview() {
         console.error("Error parsing stored profile:", error);
       }
     }
-    
+
     // Auto-generate username and password for demo
     const randomId = Math.floor(Math.random() * 10000);
     setProfile(prev => ({
@@ -57,13 +57,22 @@ export default function ProfilePreview() {
       password: `pass${randomId}`,
     }));
   }, []);
-  
+
   const handleEditProfile = () => {
     navigate("/profile-creation");
   };
-  
+
   const handleCreateAccount = async () => {
     try {
+      if (!profile.username || !profile.password) {
+        toast({
+          title: "Error",
+          description: "Username and password are required",
+          variant: "destructive"
+        });
+        return;
+      }
+
       // Ensure interests is never undefined
       const interests = profile.interests || [];
       await register({
@@ -93,7 +102,7 @@ export default function ProfilePreview() {
       });
     }
   };
-  
+
   const handleBack = () => {
     navigate("/profile-creation");
   };
@@ -107,7 +116,7 @@ export default function ProfilePreview() {
         <h2 className="text-xl font-semibold">Your AI-Generated Profile</h2>
         <div></div>
       </div>
-      
+
       <div className="profile-preview flex-1 overflow-y-auto mb-6">
         <div className="profile-header mb-4">
           <div className="video-placeholder mb-4 relative">
@@ -117,7 +126,7 @@ export default function ProfilePreview() {
               </button>
             </div>
           </div>
-          
+
           <div className="flex items-center">
             <h3 className="text-2xl font-semibold">{profile.profileName || "You"}</h3>
             <span className="ml-2 text-neutral-600">{profile.age}</span>
@@ -128,13 +137,13 @@ export default function ProfilePreview() {
             </div>
           </div>
         </div>
-        
+
         <div className="profile-bio mb-6">
           <h4 className="font-semibold mb-2">About Me</h4>
           <p className="text-neutral-700 mb-4">
             {profile.bio || "AI will generate an engaging bio based on your information."}
           </p>
-          
+
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex items-center">
               <i className="fas fa-briefcase text-neutral-500 mr-2"></i>
@@ -154,7 +163,7 @@ export default function ProfilePreview() {
             </div>
           </div>
         </div>
-        
+
         <div className="profile-interests mb-6">
           <h4 className="font-semibold mb-2">Interests</h4>
           <div className="flex flex-wrap gap-2">
@@ -169,7 +178,7 @@ export default function ProfilePreview() {
           </div>
         </div>
       </div>
-      
+
       <div className="action-buttons flex gap-4">
         <Button 
           variant="outline"
