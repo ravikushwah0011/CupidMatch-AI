@@ -24,8 +24,19 @@ interface LoginData {
   password: string;
 }
 
-interface RegisterData extends User {
+interface RegisterData {
+  username: string;
   password: string;
+  profileName: string;
+  age: number;
+  gender: string;
+  location: string;
+  bio?: string;
+  occupation?: string;
+  education?: string;
+  lookingFor: string;
+  interests: string[];
+  profileVideoUrl?: string;
 }
 
 interface UserContextType {

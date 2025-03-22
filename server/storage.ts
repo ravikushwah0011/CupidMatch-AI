@@ -5,6 +5,8 @@ import {
   videoCalls, type VideoCall, type InsertVideoCall,
   aiSuggestions, type AiSuggestion, type InsertAiSuggestion
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, or, not, desc, isNull } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -38,194 +40,196 @@ export interface IStorage {
   markAiSuggestionAsUsed(id: number): Promise<AiSuggestion | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private matches: Map<number, Match>;
-  private messages: Map<number, Message>;
-  private videoCalls: Map<number, VideoCall>;
-  private aiSuggestions: Map<number, AiSuggestion>;
-  
-  private userIdCounter: number;
-  private matchIdCounter: number;
-  private messageIdCounter: number;
-  private videoCallIdCounter: number;
-  private aiSuggestionIdCounter: number;
-
-  constructor() {
-    this.users = new Map();
-    this.matches = new Map();
-    this.messages = new Map();
-    this.videoCalls = new Map();
-    this.aiSuggestions = new Map();
-    
-    this.userIdCounter = 1;
-    this.matchIdCounter = 1;
-    this.messageIdCounter = 1;
-    this.videoCallIdCounter = 1;
-    this.aiSuggestionIdCounter = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values({
+      ...insertUser,
+      bio: insertUser.bio || null,
+      occupation: insertUser.occupation || null,
+      education: insertUser.education || null,
+      profileVideoUrl: insertUser.profileVideoUrl || null
+    }).returning();
     return user;
   }
 
   async updateUser(id: number, updateData: Partial<InsertUser>): Promise<User | undefined> {
-    const user = await this.getUser(id);
-    if (!user) return undefined;
-    
-    const updatedUser = { ...user, ...updateData };
-    this.users.set(id, updatedUser);
+    const [updatedUser] = await db.update(users)
+      .set(updateData)
+      .where(eq(users.id, id))
+      .returning();
     return updatedUser;
   }
 
   // Match methods
   async getMatch(id: number): Promise<Match | undefined> {
-    return this.matches.get(id);
+    const [match] = await db.select().from(matches).where(eq(matches.id, id));
+    return match;
   }
 
   async getMatchesByUser(userId: number): Promise<Match[]> {
-    return Array.from(this.matches.values()).filter(
-      (match) => match.userId1 === userId || match.userId2 === userId
-    );
+    return await db.select()
+      .from(matches)
+      .where(or(
+        eq(matches.userId1, userId),
+        eq(matches.userId2, userId)
+      ));
   }
 
   async getPotentialMatches(userId: number): Promise<User[]> {
-    const currentUser = await this.getUser(userId);
-    if (!currentUser) return [];
-    
-    // Get IDs of users that are already matched or rejected
-    const existingMatchIds = new Set<number>();
+    // Get all matches where this user is involved
     const userMatches = await this.getMatchesByUser(userId);
     
-    userMatches.forEach(match => {
-      if (match.userId1 === userId) {
-        existingMatchIds.add(match.userId2);
-      } else {
-        existingMatchIds.add(match.userId1);
-      }
-    });
-    
-    // Filter out the current user and already matched/rejected users
-    return Array.from(this.users.values()).filter(
-      (user) => user.id !== userId && !existingMatchIds.has(user.id)
+    // Extract IDs of users that are already matched
+    const matchedUserIds = userMatches.map(match => 
+      match.userId1 === userId ? match.userId2 : match.userId1
     );
+    
+    // Add current user ID to exclude list
+    matchedUserIds.push(userId);
+    
+    // If there are no matchedUserIds (only the current user), we need a simpler query
+    if (matchedUserIds.length === 1) {
+      return await db.select()
+        .from(users)
+        .where(not(eq(users.id, userId)));
+    }
+    
+    // Get all users not in the exclude list
+    return await db.select()
+      .from(users)
+      .where(not(eq(users.id, userId)))
+      .where(builder => {
+        for (const id of matchedUserIds.filter(id => id !== userId)) {
+          builder.and(not(eq(users.id, id)));
+        }
+        return builder;
+      });
   }
 
   async createMatch(insertMatch: InsertMatch): Promise<Match> {
-    const id = this.matchIdCounter++;
-    const timestamp = new Date();
-    const match: Match = { ...insertMatch, id, timestamp };
-    this.matches.set(id, match);
+    const [match] = await db.insert(matches).values({
+      userId1: insertMatch.userId1,
+      userId2: insertMatch.userId2,
+      status: insertMatch.status,
+      compatibilityScore: insertMatch.compatibilityScore || null
+    }).returning();
     return match;
   }
 
   async updateMatchStatus(id: number, status: string): Promise<Match | undefined> {
-    const match = await this.getMatch(id);
-    if (!match) return undefined;
-    
-    const updatedMatch: Match = { ...match, status };
-    this.matches.set(id, updatedMatch);
+    const [updatedMatch] = await db.update(matches)
+      .set({ status })
+      .where(eq(matches.id, id))
+      .returning();
     return updatedMatch;
   }
 
   // Message methods
   async getMessage(id: number): Promise<Message | undefined> {
-    return this.messages.get(id);
+    const [message] = await db.select().from(messages).where(eq(messages.id, id));
+    return message;
   }
 
   async getMessagesByMatch(matchId: number): Promise<Message[]> {
-    return Array.from(this.messages.values())
-      .filter(message => message.matchId === matchId)
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    return await db.select()
+      .from(messages)
+      .where(eq(messages.matchId, matchId))
+      .orderBy(messages.timestamp);
   }
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
-    const id = this.messageIdCounter++;
-    const timestamp = new Date();
-    const message: Message = { ...insertMessage, id, timestamp };
-    this.messages.set(id, message);
+    const [message] = await db.insert(messages)
+      .values(insertMessage)
+      .returning();
     return message;
   }
 
   // VideoCall methods
   async getVideoCall(id: number): Promise<VideoCall | undefined> {
-    return this.videoCalls.get(id);
+    const [videoCall] = await db.select().from(videoCalls).where(eq(videoCalls.id, id));
+    return videoCall;
   }
 
   async getVideoCallsByMatch(matchId: number): Promise<VideoCall[]> {
-    return Array.from(this.videoCalls.values())
-      .filter(videoCall => videoCall.matchId === matchId)
-      .sort((a, b) => {
-        if (a.scheduledTime && b.scheduledTime) {
-          return a.scheduledTime.getTime() - b.scheduledTime.getTime();
-        }
-        return 0;
-      });
+    return await db.select()
+      .from(videoCalls)
+      .where(eq(videoCalls.matchId, matchId))
+      .orderBy(videoCalls.scheduledTime);
   }
 
   async createVideoCall(insertVideoCall: InsertVideoCall): Promise<VideoCall> {
-    const id = this.videoCallIdCounter++;
-    const videoCall: VideoCall = { ...insertVideoCall, id, duration: null };
-    this.videoCalls.set(id, videoCall);
+    const [videoCall] = await db.insert(videoCalls).values({
+      matchId: insertVideoCall.matchId,
+      status: insertVideoCall.status,
+      scheduledTime: insertVideoCall.scheduledTime || null,
+      duration: null
+    }).returning();
     return videoCall;
   }
 
   async updateVideoCallStatus(id: number, status: string, duration?: number): Promise<VideoCall | undefined> {
-    const videoCall = await this.getVideoCall(id);
-    if (!videoCall) return undefined;
+    const updateData: Partial<VideoCall> = { status };
+    if (duration !== undefined) {
+      updateData.duration = duration;
+    }
     
-    const updatedVideoCall: VideoCall = { 
-      ...videoCall, 
-      status,
-      ...(duration !== undefined && { duration })
-    };
-    this.videoCalls.set(id, updatedVideoCall);
+    const [updatedVideoCall] = await db.update(videoCalls)
+      .set(updateData)
+      .where(eq(videoCalls.id, id))
+      .returning();
     return updatedVideoCall;
   }
 
   // AiSuggestion methods
   async getAiSuggestion(id: number): Promise<AiSuggestion | undefined> {
-    return this.aiSuggestions.get(id);
+    const [aiSuggestion] = await db.select().from(aiSuggestions).where(eq(aiSuggestions.id, id));
+    return aiSuggestion;
   }
 
   async getAiSuggestionsByUser(userId: number, suggestionType?: string): Promise<AiSuggestion[]> {
-    return Array.from(this.aiSuggestions.values())
-      .filter(suggestion => {
-        if (suggestion.userId !== userId) return false;
-        if (suggestionType && suggestion.suggestionType !== suggestionType) return false;
-        return true;
-      });
+    if (suggestionType) {
+      return await db.select()
+        .from(aiSuggestions)
+        .where(and(
+          eq(aiSuggestions.userId, userId),
+          eq(aiSuggestions.suggestionType, suggestionType)
+        ));
+    }
+    
+    return await db.select()
+      .from(aiSuggestions)
+      .where(eq(aiSuggestions.userId, userId));
   }
 
   async createAiSuggestion(insertAiSuggestion: InsertAiSuggestion): Promise<AiSuggestion> {
-    const id = this.aiSuggestionIdCounter++;
-    const aiSuggestion: AiSuggestion = { ...insertAiSuggestion, id, isUsed: false };
-    this.aiSuggestions.set(id, aiSuggestion);
+    const [aiSuggestion] = await db.insert(aiSuggestions)
+      .values({
+        ...insertAiSuggestion,
+        isUsed: false
+      })
+      .returning();
     return aiSuggestion;
   }
 
   async markAiSuggestionAsUsed(id: number): Promise<AiSuggestion | undefined> {
-    const aiSuggestion = await this.getAiSuggestion(id);
-    if (!aiSuggestion) return undefined;
-    
-    const updatedAiSuggestion: AiSuggestion = { ...aiSuggestion, isUsed: true };
-    this.aiSuggestions.set(id, updatedAiSuggestion);
+    const [updatedAiSuggestion] = await db.update(aiSuggestions)
+      .set({ isUsed: true })
+      .where(eq(aiSuggestions.id, id))
+      .returning();
     return updatedAiSuggestion;
   }
 }
 
-export const storage = new MemStorage();
+// Use the DatabaseStorage implementation
+export const storage = new DatabaseStorage();
