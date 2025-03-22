@@ -1,7 +1,5 @@
-// Polyfill for Node.js global object used by some libraries (like Google Generative AI)
-if (typeof window !== 'undefined' && !window.global) {
-  window.global = window;
-}
+// Import polyfills first to ensure they're available before any other imports
+import "./lib/browser-polyfills";
 
 import { createRoot } from "react-dom/client";
 import App from "./App";
