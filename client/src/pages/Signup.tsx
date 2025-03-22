@@ -4,23 +4,38 @@ import { useLocation } from "wouter";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Signup() {
   const [, navigate] = useLocation();
   const { register } = useUser();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     username: "",
+    email: "",
     password: "",
-    email: ""
+    confirmPassword: "",
+    age: ""
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       await register({
-        ...formData,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        age: parseInt(formData.age),
         profileName: formData.username,
-        age: 25,
         gender: "Not specified",
         location: "",
         lookingFor: "",
@@ -28,18 +43,23 @@ export default function Signup() {
       });
       navigate("/profile-creation");
     } catch (error) {
-      console.error("Signup error:", error);
+      toast({
+        title: "Signup failed",
+        description: "Please try again",
+        variant: "destructive"
+      });
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Sign Up</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+    <div className="container mx-auto p-4 max-w-md">
+      <h1 className="text-2xl font-bold mb-6">Create Account</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Input 
             type="text"
-            placeholder="Username"
+            placeholder="Full Name"
+            required
             value={formData.username}
             onChange={(e) => setFormData({...formData, username: e.target.value})}
           />
@@ -48,21 +68,42 @@ export default function Signup() {
           <Input 
             type="email"
             placeholder="Email"
+            required
             value={formData.email}
             onChange={(e) => setFormData({...formData, email: e.target.value})}
           />
         </div>
         <div>
           <Input 
+            type="number"
+            placeholder="Age"
+            required
+            min="18"
+            value={formData.age}
+            onChange={(e) => setFormData({...formData, age: e.target.value})}
+          />
+        </div>
+        <div>
+          <Input 
             type="password"
             placeholder="Password"
+            required
             value={formData.password}
             onChange={(e) => setFormData({...formData, password: e.target.value})}
           />
         </div>
-        <Button type="submit">Sign Up</Button>
-        <p>
-          Already have an account? <a href="/login" className="text-blue-500">Login</a>
+        <div>
+          <Input 
+            type="password"
+            placeholder="Confirm Password"
+            required
+            value={formData.confirmPassword}
+            onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+          />
+        </div>
+        <Button type="submit" className="w-full">Sign Up</Button>
+        <p className="text-center">
+          Already have an account? <a href="/login" className="text-primary">Login</a>
         </p>
       </form>
     </div>

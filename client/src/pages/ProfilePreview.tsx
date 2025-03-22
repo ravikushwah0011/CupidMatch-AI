@@ -1,34 +1,28 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
 import { useUser } from "@/context/UserContext";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 
-interface GeneratedProfile {
+interface Profile {
+  username: string;
+  profileName: string;
+  age: number;
+  gender: string;
+  location: string;
   bio: string;
+  occupation: string;
+  education: string;
+  lookingFor: string;
   interests: string[];
+  profileVideoUrl: string;
 }
 
 export default function ProfilePreview() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const { register } = useUser();
-  const [generatedProfile, setGeneratedProfile] = useState<GeneratedProfile | null>(null);
-  const [profile, setProfile] = useState({
-    username: "",
-    password: "",
-    profileName: "",
-    age: 25,
-    gender: "Not specified",
-    location: "New York",
-    bio: "",
-    occupation: "Not specified",
-    education: "Not specified",
-    lookingFor: "Long-term relationship",
-    interests: [] as string[],
-    profileVideoUrl: "https://example.com/sample-video.mp4", // Placeholder URL
-  });
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     const storedProfile = localStorage.getItem('userProfile');
@@ -38,127 +32,73 @@ export default function ProfilePreview() {
         setProfile(parsed);
       } catch (error) {
         console.error("Error parsing stored profile:", error);
+        navigate("/profile-creation");
       }
+    } else {
+      navigate("/profile-creation");
     }
-  }, []);
+  }, [navigate]);
 
   const handleEditProfile = () => {
     navigate("/profile-creation");
   };
 
   const handleCreateAccount = async () => {
-    try {
-      if (!profile.username || !profile.password) {
-        toast({
-          title: "Error",
-          description: "Username and password are required",
-          variant: "destructive"
-        });
-        return;
-      }
+    if (!profile) return;
 
-      // Ensure interests is never undefined
-      const interests = profile.interests || [];
+    try {
       await register({
-        username: profile.username,
-        password: profile.password,
-        profileName: profile.profileName || "New User",
-        age: profile.age,
-        gender: profile.gender,
-        location: profile.location,
-        bio: profile.bio || "",
-        occupation: profile.occupation,
-        education: profile.education,
-        lookingFor: profile.lookingFor,
-        interests: interests,
-        profileVideoUrl: profile.profileVideoUrl,
+        ...profile,
+        interests: profile.interests || []
       });
+      localStorage.removeItem('userProfile'); // Clear stored profile
+      navigate("/");
       toast({
-        title: "Registration successful!",
+        title: "Success!",
         description: "Your profile has been created.",
       });
     } catch (error) {
-      console.error("Registration error:", error);
       toast({
         title: "Registration failed",
-        description: "Please try again with different details.",
+        description: "Please try again",
         variant: "destructive",
       });
     }
   };
 
-  const handleBack = () => {
-    navigate("/profile-creation");
-  };
+  if (!profile) return null;
 
   return (
     <div className="h-screen flex flex-col p-6">
       <div className="flex justify-between items-center mb-6">
-        <button className="text-neutral-600" onClick={handleBack}>
+        <button className="text-neutral-600" onClick={handleEditProfile}>
           <i className="fas fa-arrow-left"></i>
         </button>
-        <h2 className="text-xl font-semibold">Your AI-Generated Profile</h2>
+        <h2 className="text-xl font-semibold">Preview Your Profile</h2>
         <div></div>
       </div>
 
-      <div className="profile-preview flex-1 overflow-y-auto mb-6">
-        <div className="profile-header mb-4">
-          <div className="video-placeholder mb-4 relative">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <button className="bg-white bg-opacity-80 rounded-full w-16 h-16 flex items-center justify-center shadow-lg">
-                <i className="fas fa-camera text-primary text-xl"></i>
-              </button>
+      <div className="flex-1 overflow-y-auto">
+        <div className="bg-white rounded-lg p-6 shadow-sm mb-4">
+          <h3 className="text-xl font-semibold mb-2">{profile.profileName}, {profile.age}</h3>
+          <p className="text-neutral-600 mb-4">{profile.location}</p>
+          <p className="mb-4">{profile.bio}</p>
+
+          <div className="mb-4">
+            <h4 className="font-semibold mb-2">Interests</h4>
+            <div className="flex flex-wrap gap-2">
+              {profile.interests?.map((interest, index) => (
+                <span key={index} className="bg-neutral-100 px-3 py-1 rounded-full text-sm">
+                  {interest}
+                </span>
+              ))}
             </div>
           </div>
 
-          <div className="flex items-center">
-            <h3 className="text-2xl font-semibold">{profile.profileName || "You"}</h3>
-            <span className="ml-2 text-neutral-600">{profile.age}</span>
-            <div className="ml-auto">
-              <span className="bg-accent bg-opacity-10 text-accent px-3 py-1 rounded-full text-xs">
-                <i className="fas fa-magic mr-1"></i> AI Enhanced
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="profile-bio mb-6">
-          <h4 className="font-semibold mb-2">About Me</h4>
-          <p className="text-neutral-700 mb-4">
-            {profile.bio || "AI will generate an engaging bio based on your information."}
-          </p>
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="flex items-center">
-              <i className="fas fa-briefcase text-neutral-500 mr-2"></i>
-              <span>{profile.occupation}</span>
-            </div>
-            <div className="flex items-center">
-              <i className="fas fa-graduation-cap text-neutral-500 mr-2"></i>
-              <span>{profile.education}</span>
-            </div>
-            <div className="flex items-center">
-              <i className="fas fa-map-marker-alt text-neutral-500 mr-2"></i>
-              <span>{profile.location}</span>
-            </div>
-            <div className="flex items-center">
-              <i className="fas fa-heart text-neutral-500 mr-2"></i>
-              <span>{profile.lookingFor}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="profile-interests mb-6">
-          <h4 className="font-semibold mb-2">Interests</h4>
-          <div className="flex flex-wrap gap-2">
-            {Array.isArray(profile.interests) && profile.interests.map((interest, index) => (
-              <span key={index} className="bg-neutral-100 px-3 py-1 rounded-full text-sm">
-                {interest}
-              </span>
-            ))}
-            {(!profile.interests || profile.interests.length === 0) && (
-              <span className="text-neutral-500 text-sm">AI will suggest interests based on your responses.</span>
-            )}
+          <div className="space-y-2">
+            <p><strong>Occupation:</strong> {profile.occupation}</p>
+            <p><strong>Education:</strong> {profile.education}</p>
+            <p><strong>Looking for:</strong> {profile.lookingFor}</p>
           </div>
         </div>
       </div>
@@ -166,16 +106,16 @@ export default function ProfilePreview() {
       <div className="action-buttons flex gap-4">
         <Button 
           variant="outline"
-          className="flex-1 border border-neutral-300 py-3 rounded-full font-montserrat"
+          className="flex-1"
           onClick={handleEditProfile}
         >
           Edit Profile
         </Button>
         <Button 
-          className="flex-1 bg-primary text-white py-3 rounded-full font-montserrat shadow-button"
+          className="flex-1"
           onClick={handleCreateAccount}
         >
-          Looks Good!
+          Complete Registration
         </Button>
       </div>
     </div>

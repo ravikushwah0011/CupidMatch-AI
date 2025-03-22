@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useUser } from "@/context/UserContext";
@@ -7,14 +8,13 @@ export default function Onboarding() {
   const [, navigate] = useLocation();
   const { isAuthenticated } = useUser();
   
-  // Redirect to home if already authenticated
   if (isAuthenticated) {
     navigate("/");
     return null;
   }
   
   const handleGetStarted = () => {
-    navigate("/profile-creation");
+    navigate("/signup");
   };
 
   return (
@@ -40,6 +40,9 @@ export default function Onboarding() {
         >
           Let's Get Started
         </Button>
+        <p className="mt-4 text-neutral-600">
+          Already have an account? <a href="/login" className="text-primary">Login here</a>
+        </p>
       </div>
       
       <div className="text-center text-sm text-neutral-500">
