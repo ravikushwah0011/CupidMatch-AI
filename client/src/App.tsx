@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,6 +19,9 @@ import UserProfile from "@/pages/UserProfile";
 import NotFound from "@/pages/not-found";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import Navbar from "@/components/Navbar"; // Import Navbar component
+import Sidebar from "@/components/Sidebar"; //Import Sidebar component
+
 
 function Router() {
   return (
@@ -41,6 +44,8 @@ function Router() {
 }
 
 function App() {
+  const [location] = useLocation();
+  const showSidebar = !location.includes('/onboarding') && !location.includes('/login') && !location.includes('/signup');
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
@@ -71,6 +76,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
+        <Navbar />
+        {showSidebar && <Sidebar />}
         <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg">
           <Router />
           <Toaster />
