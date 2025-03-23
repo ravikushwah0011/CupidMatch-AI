@@ -79,11 +79,16 @@ export default function Home() {
       {/* Header */}
       <header className="p-4 flex items-center justify-between border-b border-neutral-200">
         <div className="flex items-center">
-          <img
-            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-            alt="Your profile"
-            className="w-10 h-10 rounded-full object-cover border border-neutral-200"
-          />
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+            className="focus:outline-none"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+              alt="Your profile"
+              className="w-10 h-10 rounded-full object-cover border border-neutral-200"
+            />
+          </button>
         </div>
         <div className="logo">
           <h1 className="text-xl font-poppins font-semibold">
