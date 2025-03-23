@@ -21,37 +21,42 @@ interface Match {
 
 export default function Messages() {
   const [, navigate] = useLocation();
-  
+
   // Only get matches with status "matched"
   const { data: matches, isLoading } = useQuery<Match[]>({
-    queryKey: ['/api/matches'],
-    select: (data) => data.filter(match => match.status === 'matched')
+    queryKey: ["/api/matches"],
+    select: (data) => data.filter((match) => match.status === "matched"),
   });
-  
+
   const handleChatClick = (matchId: number) => {
     navigate(`/chat/${matchId}`);
   };
-  
+
   // Format time for last message
   const formatMessageTime = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
-    
+
     // If same day, show time
     if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     }
-    
+
     // If within a week, show day name
-    const daysDiff = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    const daysDiff = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+    );
     if (daysDiff < 7) {
-      return date.toLocaleDateString([], { weekday: 'short' });
+      return date.toLocaleDateString([], { weekday: "short" });
     }
-    
+
     // Otherwise show date
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString([], { month: "short", day: "numeric" });
   };
-  
+
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
@@ -67,8 +72,8 @@ export default function Messages() {
           </div>
         ) : matches && matches.length > 0 ? (
           <div className="divide-y divide-neutral-100">
-            {matches.map(match => (
-              <div 
+            {matches.map((match) => (
+              <div
                 key={match.id}
                 className="py-3 cursor-pointer hover:bg-neutral-50"
                 onClick={() => handleChatClick(match.id)}
@@ -76,7 +81,7 @@ export default function Messages() {
                 <div className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-neutral-200 mr-3 relative overflow-hidden">
                     {match.otherUser.profileVideoUrl ? (
-                      <video 
+                      <video
                         src={match.otherUser.profileVideoUrl}
                         className="w-full h-full object-cover"
                       />
@@ -88,7 +93,9 @@ export default function Messages() {
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between">
-                      <h3 className="font-semibold">{match.otherUser.profileName}</h3>
+                      <h3 className="font-semibold">
+                        {match.otherUser.profileName}
+                      </h3>
                       {match.lastMessage && (
                         <span className="text-xs text-neutral-500">
                           {formatMessageTime(match.lastMessage.timestamp)}
@@ -97,9 +104,15 @@ export default function Messages() {
                     </div>
                     <p className="text-sm text-neutral-600 truncate">
                       {match.lastMessage ? (
-                        match.lastMessage.isFromOtherUser ? match.lastMessage.content : `You: ${match.lastMessage.content}`
+                        match.lastMessage.isFromOtherUser ? (
+                          match.lastMessage.content
+                        ) : (
+                          `You: ${match.lastMessage.content}`
+                        )
                       ) : (
-                        <span className="text-neutral-400">No messages yet</span>
+                        <span className="text-neutral-400">
+                          No messages yet
+                        </span>
                       )}
                     </p>
                   </div>
@@ -117,8 +130,8 @@ export default function Messages() {
           </div>
         )}
       </main>
-      
-      <Navbar />
+
+      {/* <Navbar /> */}
     </div>
   );
 }

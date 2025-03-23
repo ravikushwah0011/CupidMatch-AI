@@ -19,20 +19,20 @@ interface Match {
 
 export default function Matches() {
   const [, navigate] = useLocation();
-  
+
   const { data: matches, isLoading } = useQuery<Match[]>({
-    queryKey: ['/api/matches'],
+    queryKey: ["/api/matches"],
   });
-  
+
   const handleMatchClick = (matchId: number) => {
     navigate(`/chat/${matchId}`);
   };
-  
+
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
       <header className="p-4 border-b border-neutral-200">
-        <h1 className="text-xl font-semibold">Your Matches</h1>
+        <h1 className="text-xl font-semibold text-center">Your Matches</h1>
       </header>
 
       {/* Main Content */}
@@ -43,8 +43,8 @@ export default function Matches() {
           </div>
         ) : matches && matches.length > 0 ? (
           <div className="grid grid-cols-1 gap-4">
-            {matches.map(match => (
-              <div 
+            {matches.map((match) => (
+              <div
                 key={match.id}
                 className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => handleMatchClick(match.id)}
@@ -52,7 +52,7 @@ export default function Matches() {
                 <div className="flex">
                   <div className="w-24 h-24 bg-neutral-200 relative">
                     {match.otherUser.profileVideoUrl ? (
-                      <video 
+                      <video
                         src={match.otherUser.profileVideoUrl}
                         className="w-full h-full object-cover"
                       />
@@ -65,11 +65,15 @@ export default function Matches() {
                   <div className="p-3 flex-1">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-semibold">{match.otherUser.profileName}, {match.otherUser.age}</h3>
-                        <p className="text-sm text-neutral-500">{match.otherUser.location}</p>
+                        <h3 className="font-semibold">
+                          {match.otherUser.profileName}, {match.otherUser.age}
+                        </h3>
+                        <p className="text-sm text-neutral-500">
+                          {match.otherUser.location}
+                        </p>
                       </div>
                       {match.compatibilityScore && (
-                        <span className="bg-accent bg-opacity-10 text-accent px-2 py-1 rounded-full text-xs">
+                        <span className="bg-emerald-500  text-accent px-2 py-1 rounded-full text-xs">
                           {match.compatibilityScore}% Match
                         </span>
                       )}
@@ -79,7 +83,8 @@ export default function Matches() {
                         Matched {new Date(match.timestamp).toLocaleDateString()}
                       </span>
                       <button className="text-primary text-sm">
-                        Message <i className="fas fa-chevron-right text-xs ml-1"></i>
+                        Message{" "}
+                        <i className="fas fa-chevron-right text-xs ml-1"></i>
                       </button>
                     </div>
                   </div>
@@ -97,8 +102,8 @@ export default function Matches() {
           </div>
         )}
       </main>
-      
-      <Navbar />
+
+      {/* <Navbar /> */}
     </div>
   );
 }

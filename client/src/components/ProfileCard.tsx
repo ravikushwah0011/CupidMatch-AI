@@ -6,6 +6,15 @@ import { useUser } from "@/context/UserContext";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import VideoPlayer from "./VideoPlayer";
+import {
+  faHeart,
+  faPause,
+  faPlay,
+  faRobot,
+  faTimes,
+  faVideo,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface ProfileCardProps {
   profile: {
@@ -141,9 +150,10 @@ export default function ProfileCard({
               className="w-10 h-10 rounded-full bg-white bg-opacity-20 backdrop-blur-sm flex items-center justify-center text-white"
               onClick={toggleVideo}
             >
-              <i
-                className={`fas ${isVideoPlaying ? "fa-pause" : "fa-play"}`}
-              ></i>
+              <FontAwesomeIcon
+                icon={isVideoPlaying ? faPause : faPlay}
+                className="text-xl text-primary"
+              />
             </button>
           </div>
         </div>
@@ -175,9 +185,10 @@ export default function ProfileCard({
 
         {profile.compatibilityReasons &&
           profile.compatibilityReasons.length > 0 && (
-            <div className="ai-compatibility bg-accent bg-opacity-5 rounded-lg p-3 mb-4">
+            <div className="ai-compatibility bg-emerald-500 rounded-lg p-3 mb-4">
               <div className="flex items-center mb-2">
-                <i className="fas fa-robot text-accent mr-2"></i>
+                <FontAwesomeIcon icon={faRobot} className="text-xl text-accent mr-2" />
+                
                 <h4 className="text-sm font-semibold">Why you might connect</h4>
               </div>
               <ul className="list-disc pl-5 text-sm text-neutral-700">
@@ -195,7 +206,7 @@ export default function ProfileCard({
             className="w-16 h-16 rounded-full flex items-center justify-center text-neutral-500 text-2xl p-0"
             disabled={passMutation.isPending}
           >
-            <i className="fas fa-times"></i>
+            <FontAwesomeIcon icon={faTimes} className="text-xl text-primary" />
           </Button>
 
           <Button
@@ -203,7 +214,7 @@ export default function ProfileCard({
             variant="secondary"
             className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl p-0 bg-accent hover:bg-accent/90"
           >
-            <i className="fas fa-video"></i>
+            <FontAwesomeIcon icon={faVideo} className="text-xl text-primary" />
           </Button>
 
           <Button
@@ -211,7 +222,7 @@ export default function ProfileCard({
             className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl p-0"
             disabled={likeMutation.isPending}
           >
-            <i className="fas fa-heart"></i>
+            <FontAwesomeIcon icon={faHeart} className="text-xl" />
           </Button>
         </div>
       </div>

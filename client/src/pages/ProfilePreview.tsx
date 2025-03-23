@@ -21,7 +21,7 @@ interface Profile {
 export default function ProfilePreview() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const { register } = useUser();
+  const { register, updateProfile } = useUser();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function ProfilePreview() {
     if (!profile) return;
 
     try {
-      await register({
+      await updateProfile({
         ...profile,
         interests: profile.interests || [],
       });
@@ -126,7 +126,7 @@ export default function ProfilePreview() {
           Edit Profile
         </Button>
         <Button className="flex-1" onClick={handleCreateAccount}>
-          Complete Registration
+          Complete Registration Profile
         </Button>
       </div>
     </div>

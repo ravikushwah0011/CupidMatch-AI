@@ -5,6 +5,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 interface UserInput {
   key: string;
@@ -341,7 +343,7 @@ export default function ProfileCreation() {
       </div>
 
       <div className="message-input-container border-t border-neutral-200 pt-4">
-        <div className="flex">
+        <div className="flex items-center">
           <Input
             type="text"
             placeholder="Type your response..."
@@ -356,9 +358,9 @@ export default function ProfileCreation() {
             disabled={!currentInput.trim() || generateProfileMutation.isPending}
           >
             {generateProfileMutation.isPending ? (
-              <i className="fas fa-spinner fa-spin"></i>
+              <FontAwesomeIcon icon={faSpinner} />
             ) : (
-              <i className="fas fa-paper-plane"></i>
+              <FontAwesomeIcon icon={faPaperPlane} />
             )}
           </Button>
         </div>

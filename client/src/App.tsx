@@ -21,7 +21,7 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Navbar from "@/components/Navbar"; // Import Navbar component
 import Sidebar from "@/components/Sidebar"; //Import Sidebar component
-
+import BottomBar from "./components/BottomBar";
 
 function Router() {
   return (
@@ -45,7 +45,10 @@ function Router() {
 
 function App() {
   const [location] = useLocation();
-  const showSidebar = !location.includes('/onboarding') && !location.includes('/login') && !location.includes('/signup');
+  const showSidebar =
+    !location.includes("/onboarding") &&
+    !location.includes("/login") &&
+    !location.includes("/signup");
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
@@ -76,11 +79,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        <Navbar />
+        {/* <Navbar /> */}
         {showSidebar && <Sidebar />}
         <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg">
           <Router />
           <Toaster />
+          <BottomBar />
         </div>
       </UserProvider>
     </QueryClientProvider>
