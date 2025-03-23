@@ -25,18 +25,21 @@ export default function ProfilePreview() {
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    const storedProfile = localStorage.getItem('userProfile');
+    const storedProfile = localStorage.getItem("generatedProfile");
     if (storedProfile) {
       try {
         const parsed = JSON.parse(storedProfile);
         setProfile(parsed);
+        console.log(profile, "get profile from local storage: ", parsed);
       } catch (error) {
         console.error("Error parsing stored profile:", error);
+        localStorage.removeItem("generatedProfile");
         navigate("/profile-creation");
       }
     } else {
       navigate("/profile-creation");
     }
+    console.log("setProfile", profile);
   }, [navigate]);
 
   const handleEditProfile = () => {
@@ -49,9 +52,9 @@ export default function ProfilePreview() {
     try {
       await register({
         ...profile,
-        interests: profile.interests || []
+        interests: profile.interests || [],
       });
-      localStorage.removeItem('userProfile'); // Clear stored profile
+      localStorage.removeItem("generatedProfile"); // Clear stored profile
       navigate("/");
       toast({
         title: "Success!",
@@ -80,7 +83,9 @@ export default function ProfilePreview() {
 
       <div className="flex-1 overflow-y-auto">
         <div className="bg-white rounded-lg p-6 shadow-sm mb-4">
-          <h3 className="text-xl font-semibold mb-2">{profile.profileName}, {profile.age}</h3>
+          <h3 className="text-xl font-semibold mb-2">
+            {profile.profileName}, {profile.age}
+          </h3>
           <p className="text-neutral-600 mb-4">{profile.location}</p>
           <p className="mb-4">{profile.bio}</p>
 
@@ -88,7 +93,10 @@ export default function ProfilePreview() {
             <h4 className="font-semibold mb-2">Interests</h4>
             <div className="flex flex-wrap gap-2">
               {profile.interests?.map((interest, index) => (
-                <span key={index} className="bg-neutral-100 px-3 py-1 rounded-full text-sm">
+                <span
+                  key={index}
+                  className="bg-neutral-100 px-3 py-1 rounded-full text-sm"
+                >
                   {interest}
                 </span>
               ))}
@@ -96,25 +104,28 @@ export default function ProfilePreview() {
           </div>
 
           <div className="space-y-2">
-            <p><strong>Occupation:</strong> {profile.occupation}</p>
-            <p><strong>Education:</strong> {profile.education}</p>
-            <p><strong>Looking for:</strong> {profile.lookingFor}</p>
+            <p>
+              <strong>Occupation:</strong> {profile.occupation}
+            </p>
+            <p>
+              <strong>Education:</strong> {profile.education}
+            </p>
+            <p>
+              <strong>Looking for:</strong> {profile.lookingFor}
+            </p>
           </div>
         </div>
       </div>
 
       <div className="action-buttons flex gap-4">
-        <Button 
+        <Button
           variant="outline"
           className="flex-1"
           onClick={handleEditProfile}
         >
           Edit Profile
         </Button>
-        <Button 
-          className="flex-1"
-          onClick={handleCreateAccount}
-        >
+        <Button className="flex-1" onClick={handleCreateAccount}>
           Complete Registration
         </Button>
       </div>

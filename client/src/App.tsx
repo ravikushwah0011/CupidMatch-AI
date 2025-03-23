@@ -17,12 +17,16 @@ import VideoCall from "@/pages/VideoCall";
 import VideoSchedule from "@/pages/VideoSchedule";
 import UserProfile from "@/pages/UserProfile";
 import NotFound from "@/pages/not-found";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/onboarding" component={Onboarding} />
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       <Route path="/profile-creation" component={ProfileCreation} />
       <Route path="/profile-preview" component={ProfilePreview} />
       <Route path="/matches" component={Matches} />
@@ -44,10 +48,10 @@ function App() {
     const checkAuth = async () => {
       try {
         await queryClient.prefetchQuery({
-          queryKey: ['/api/auth/me'],
+          queryKey: ["/api/auth/me"],
         });
       } catch (error) {
-        console.log('User not authenticated');
+        console.log("User not authenticated");
       } finally {
         setInitialized(true);
       }

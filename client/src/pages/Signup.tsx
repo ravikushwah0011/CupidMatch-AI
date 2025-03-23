@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+// import { Toast } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Signup() {
   const [, navigate] = useLocation();
@@ -15,7 +15,8 @@ export default function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
-    age: ""
+    age: "",
+    gender: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,7 +25,7 @@ export default function Signup() {
       toast({
         title: "Error",
         description: "Passwords do not match",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -36,17 +37,17 @@ export default function Signup() {
         password: formData.password,
         age: parseInt(formData.age),
         profileName: formData.username,
-        gender: "Not specified",
+        gender: formData.gender,
         location: "",
         lookingFor: "",
-        interests: []
+        interests: [],
       });
       navigate("/profile-creation");
     } catch (error) {
       toast({
         title: "Signup failed",
         description: "Please try again",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -56,54 +57,110 @@ export default function Signup() {
       <h1 className="text-2xl font-bold mb-6">Create Account</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Input 
+          <Input
             type="text"
             placeholder="Full Name"
             required
             value={formData.username}
-            onChange={(e) => setFormData({...formData, username: e.target.value})}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
           />
         </div>
         <div>
-          <Input 
+          <Input
             type="email"
             placeholder="Email"
             required
             value={formData.email}
-            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
           />
         </div>
         <div>
-          <Input 
+          <Input
             type="number"
             placeholder="Age"
             required
             min="18"
             value={formData.age}
-            onChange={(e) => setFormData({...formData, age: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, age: e.target.value })}
           />
         </div>
+        <div className="p-2">
+          <label>Gender:</label>
+          <div className="radio-group flex gap-2">
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="male"
+                checked={formData.gender === "male"}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value })
+                }
+              />
+              Male
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="female"
+                checked={formData.gender === "female"}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value })
+                }
+              />
+              Female
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="other"
+                checked={formData.gender === "other"}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value })
+                }
+              />
+              Other
+            </label>
+          </div>
+        </div>
         <div>
-          <Input 
+          <Input
             type="password"
             placeholder="Password"
             required
             value={formData.password}
-            onChange={(e) => setFormData({...formData, password: e.target.value})}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
           />
         </div>
         <div>
-          <Input 
+          <Input
             type="password"
             placeholder="Confirm Password"
             required
             value={formData.confirmPassword}
-            onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+            onChange={(e) =>
+              setFormData({ ...formData, confirmPassword: e.target.value })
+            }
           />
         </div>
-        <Button type="submit" className="w-full">Sign Up</Button>
+        <Button type="submit" className="w-full">
+          Sign Up
+        </Button>
         <p className="text-center">
-          Already have an account? <a href="/login" className="text-primary">Login</a>
+          Already have an account?{" "}
+          <a href="/login" className="text-primary">
+            Login
+          </a>
         </p>
       </form>
     </div>

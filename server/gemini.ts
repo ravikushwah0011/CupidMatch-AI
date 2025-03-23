@@ -1,4 +1,9 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} from "@google/generative-ai";
+import { log } from "console";
 
 // Initialize the Google Generative AI with API key from environment variables
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
@@ -67,20 +72,25 @@ async function parseJsonResponse(responseText: string): Promise<any> {
 }
 
 // Generate user profile based on their input
-export async function generateUserProfile(userInputs: Record<string, any>): Promise<ProfileSuggestionResponse> {
+export async function generateUserProfile(
+  userInputs: Record<string, any>,
+): Promise<ProfileSuggestionResponse> {
+  console.log("gemini userInputs", userInputs);
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-thinking-exp-01-21" });
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash-thinking-exp-01-21",
+    });
 
     const prompt = `
       Generate an engaging dating profile based on the following information:
       
-      Interests: ${userInputs.interests?.join(', ') || 'Not specified'}
-      Age: ${userInputs.age || 'Not specified'}
-      Gender: ${userInputs.gender || 'Not specified'}
-      Location: ${userInputs.location || 'Not specified'}
-      Occupation: ${userInputs.occupation || 'Not specified'}
-      Education: ${userInputs.education || 'Not specified'}
-      Looking for: ${userInputs.lookingFor || 'Not specified'}
+      Interests: ${userInputs.interests?.join(", ") || "Not specified"}
+      Age: ${userInputs.age || "Not specified"}
+      Gender: ${userInputs.gender || "Not specified"}
+      Location: ${userInputs.location || "Not specified"}
+      Occupation: ${userInputs.occupation || "Not specified"}
+      Education: ${userInputs.education || "Not specified"}
+      Looking for: ${userInputs.lookingFor || "Not specified"}
       
       Generate a compelling bio (maximum 200 characters) and a refined list of interests.
       Respond in JSON format with fields: "bio" (string) and "interests" (array of strings).
@@ -96,12 +106,20 @@ export async function generateUserProfile(userInputs: Record<string, any>): Prom
     });
 
     const response = result.response;
-    return await parseJsonResponse(response.text()) as ProfileSuggestionResponse;
+    // return (await parseJsonResponse(
+    //   response.text(),
+    // )) as ProfileSuggestionResponse;
+    const generated = await parseJsonResponse(response.text());
+    return {
+      ...userInputs,
+      bio: generated.bio,
+      interests: generated.interests,
+    };
   } catch (error) {
     console.error("Error generating profile:", error);
     return {
       bio: "Enjoys meeting new people and having meaningful conversations.",
-      interests: ["Dating", "Conversation", "Meeting new people"]
+      interests: ["Dating", "Conversation", "Meeting new people"],
     };
   }
 }
@@ -110,21 +128,23 @@ export async function generateUserProfile(userInputs: Record<string, any>): Prom
 export async function generateConversationStarters(
   user1Interests: string[],
   user2Interests: string[],
-  user2Name: string
+  user2Name: string,
 ): Promise<ConversationStarterResponse> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-thinking-exp-01-21" });
-    
-    const sharedInterests = user1Interests.filter(interest => 
-      user2Interests.includes(interest)
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash-thinking-exp-01-21",
+    });
+
+    const sharedInterests = user1Interests.filter((interest) =>
+      user2Interests.includes(interest),
     );
-    
+
     const prompt = `
       Generate 3 engaging conversation starters for a dating app chat with ${user2Name}.
       
-      My interests: ${user1Interests.join(', ')}
-      ${user2Name}'s interests: ${user2Interests.join(', ')}
-      ${sharedInterests.length > 0 ? `Shared interests: ${sharedInterests.join(', ')}` : 'We don\'t seem to have shared interests yet.'}
+      My interests: ${user1Interests.join(", ")}
+      ${user2Name}'s interests: ${user2Interests.join(", ")}
+      ${sharedInterests.length > 0 ? `Shared interests: ${sharedInterests.join(", ")}` : "We don't seem to have shared interests yet."}
       
       Make the conversation starters personal, engaging, and relevant to the shared interests if any.
       Each starter should be 1-2 sentences maximum.
@@ -141,15 +161,17 @@ export async function generateConversationStarters(
     });
 
     const response = result.response;
-    return await parseJsonResponse(response.text()) as ConversationStarterResponse;
+    return (await parseJsonResponse(
+      response.text(),
+    )) as ConversationStarterResponse;
   } catch (error) {
     console.error("Error generating conversation starters:", error);
     return {
       starters: [
         "Hi there! What's been the highlight of your day so far?",
         "I'd love to know more about your interests. What are you passionate about?",
-        "If you could travel anywhere right now, where would you go?"
-      ]
+        "If you could travel anywhere right now, where would you go?",
+      ],
     };
   }
 }
@@ -157,21 +179,23 @@ export async function generateConversationStarters(
 // Generate video date tips based on user profiles
 export async function generateVideoDateTips(
   user1: Record<string, any>,
-  user2: Record<string, any>
+  user2: Record<string, any>,
 ): Promise<VideoDateTipResponse> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-thinking-exp-01-21" });
-    
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash-thinking-exp-01-21",
+    });
+
     const prompt = `
       Generate 3 personalized tips for a successful video date between these two users:
       
       User 1: ${user1.profileName}, ${user1.age}, ${user1.gender}
-      Interests: ${user1.interests.join(', ')}
-      Bio: ${user1.bio || 'Not specified'}
+      Interests: ${user1.interests.join(", ")}
+      Bio: ${user1.bio || "Not specified"}
       
       User 2: ${user2.profileName}, ${user2.age}, ${user2.gender}
-      Interests: ${user2.interests.join(', ')}
-      Bio: ${user2.bio || 'Not specified'}
+      Interests: ${user2.interests.join(", ")}
+      Bio: ${user2.bio || "Not specified"}
       
       Provide specific, actionable tips related to their shared interests or complementary qualities.
       Each tip should be specific and personalized.
@@ -188,15 +212,15 @@ export async function generateVideoDateTips(
     });
 
     const response = result.response;
-    return await parseJsonResponse(response.text()) as VideoDateTipResponse;
+    return (await parseJsonResponse(response.text())) as VideoDateTipResponse;
   } catch (error) {
     console.error("Error generating video date tips:", error);
     return {
       tips: [
         "Find a quiet space with good lighting for your video call",
         "Prepare a few topics based on your shared interests",
-        "Be yourself and enjoy getting to know each other"
-      ]
+        "Be yourself and enjoy getting to know each other",
+      ],
     };
   }
 }
@@ -204,8 +228,10 @@ export async function generateVideoDateTips(
 // Suggest optimal times for video dates
 export async function suggestOptimalTimes(): Promise<OptimalTimeResponse> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-thinking-exp-01-21" });
-    
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash-thinking-exp-01-21",
+    });
+
     // In a real app, we would use user activity patterns
     // For now, we'll generate some reasonable suggestions
     const prompt = `
@@ -225,15 +251,15 @@ export async function suggestOptimalTimes(): Promise<OptimalTimeResponse> {
     });
 
     const response = result.response;
-    return await parseJsonResponse(response.text()) as OptimalTimeResponse;
+    return (await parseJsonResponse(response.text())) as OptimalTimeResponse;
   } catch (error) {
     console.error("Error suggesting optimal times:", error);
     return {
       times: [
         { day: "Saturday", time: "6:00 PM", confidence: 0.9 },
         { day: "Sunday", time: "3:00 PM", confidence: 0.8 },
-        { day: "Friday", time: "7:30 PM", confidence: 0.7 }
-      ]
+        { day: "Friday", time: "7:30 PM", confidence: 0.7 },
+      ],
     };
   }
 }
@@ -241,22 +267,24 @@ export async function suggestOptimalTimes(): Promise<OptimalTimeResponse> {
 // Calculate match compatibility score between two users
 export async function calculateMatchCompatibility(
   user1: Record<string, any>,
-  user2: Record<string, any>
+  user2: Record<string, any>,
 ): Promise<MatchCompatibilityResponse> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-thinking-exp-01-21" });
-    
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash-thinking-exp-01-21",
+    });
+
     const prompt = `
       Calculate the compatibility between these two dating app users:
       
       User 1: ${user1.profileName}, ${user1.age}, ${user1.gender}
-      Interests: ${user1.interests.join(', ')}
-      Bio: ${user1.bio || 'Not specified'}
+      Interests: ${user1.interests.join(", ")}
+      Bio: ${user1.bio || "Not specified"}
       Looking for: ${user1.lookingFor}
       
       User 2: ${user2.profileName}, ${user2.age}, ${user2.gender}
-      Interests: ${user2.interests.join(', ')}
-      Bio: ${user2.bio || 'Not specified'}
+      Interests: ${user2.interests.join(", ")}
+      Bio: ${user2.bio || "Not specified"}
       Looking for: ${user2.lookingFor}
       
       Provide a compatibility score (0-100) and 2-3 specific reasons for the score.
@@ -274,12 +302,14 @@ export async function calculateMatchCompatibility(
     });
 
     const response = result.response;
-    return await parseJsonResponse(response.text()) as MatchCompatibilityResponse;
+    return (await parseJsonResponse(
+      response.text(),
+    )) as MatchCompatibilityResponse;
   } catch (error) {
     console.error("Error calculating compatibility:", error);
     return {
       score: 50, // Default middle score
-      reasons: ["Unable to calculate detailed compatibility at this time"]
+      reasons: ["Unable to calculate detailed compatibility at this time"],
     };
   }
 }
