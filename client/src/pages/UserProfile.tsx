@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
@@ -31,6 +31,7 @@ import SettingsTab from "../components/SettingsTab"; // Import the new SettingsT
 import PrivacyTab from "../components/PrivacyTab"; // Import the new PrivacyTab component
 import HelpTab from "../components/HelpTab"; // Import the new HelpTab component
 import ProfileSidebar from "../components/ProfileSidebar"; // Import the new ProfileSidebar component
+import tabManager from "../lib/tabManager"; // Import the new tabManager object
 
 interface UserProfileTab {
   id: "profile" | "settings" | "privacy" | "help";
@@ -43,7 +44,7 @@ export default function UserProfile() {
   const { user, isLoading, updateProfile, logout } = useUser();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [activeTab, setActiveTab] = useState<UserProfileTab["id"]>("profile");
+  // const [activeTab, setActiveTab] = useState<UserProfileTab["id"]>("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
     profileName: "",
@@ -58,7 +59,15 @@ export default function UserProfile() {
     newInterest: "",
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar
-
+  
+  const [activeTab, setActiveTab] = useState(tabManager.activeTab);
+  useEffect(() => {
+      const unsubscribe = tabManager.subscribe(setActiveTab);
+    return () => {
+        unsubscribe(); // ✅ Corrected cleanup function
+    };
+  }, []);
+  
   // Set initial form values when user data loads
   useState(() => {
     if (user) {
@@ -254,7 +263,7 @@ export default function UserProfile() {
         </div>
       </header>
       {/* Tab Navigation */}
-      <div className="px-4 pt-4">
+      {/* <div className="px-4 pt-4">
         <div className="flex border-b border-neutral-200">
           {tabs.map((tab) => (
             <button
@@ -267,7 +276,7 @@ export default function UserProfile() {
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
       {/* Tab Content */}
       <div className="p-4">
         {/* Profile Tab */}
@@ -582,14 +591,14 @@ export default function UserProfile() {
         {activeTab === "help" && <HelpTab />}
 
         {/* Profile Sidebar */}
-        <ProfileSidebar
+        {/* <ProfileSidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
           onTabChange={(tab) => {
             setActiveTab(tab as UserProfileTab["id"]);
             setIsSidebarOpen(false);
           }}
-        />
+        /> */}
       </div>
       {/* <Navbar /> */}
     </div>

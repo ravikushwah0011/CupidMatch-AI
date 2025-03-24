@@ -49,6 +49,8 @@ function App() {
     !location.includes("/onboarding") &&
     !location.includes("/login") &&
     !location.includes("/signup");
+  !location.includes("/profile-creation") &&
+    !location.includes("/profile-preview");
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
@@ -79,13 +81,14 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        {/* <Navbar /> */}
-        {showSidebar && <Sidebar />}
-        <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg">
+        <Navbar />
+        {/* {showSidebar && <Sidebar />} */}
+        {/* <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg mt-[4rem]"> */}
+        <div>
           <Router />
           <Toaster />
-          <BottomBar />
         </div>
+        <BottomBar />
       </UserProvider>
     </QueryClientProvider>
   );

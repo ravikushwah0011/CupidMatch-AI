@@ -53,116 +53,120 @@ export default function Signup() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-md">
-      <h1 className="text-2xl font-bold mb-6">Create Account</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Input
-            type="text"
-            placeholder="Full Name"
-            required
-            value={formData.username}
-            onChange={(e) =>
-              setFormData({ ...formData, username: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          <Input
-            type="email"
-            placeholder="Email"
-            required
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          <Input
-            type="number"
-            placeholder="Age"
-            required
-            min="18"
-            value={formData.age}
-            onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-          />
-        </div>
-        <div className="p-2">
-          <label>Gender:</label>
-          <div className="radio-group flex gap-2">
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="male"
-                checked={formData.gender === "male"}
-                onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
-                }
-              />
-              Male
-            </label>
-
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="female"
-                checked={formData.gender === "female"}
-                onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
-                }
-              />
-              Female
-            </label>
-
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="other"
-                checked={formData.gender === "other"}
-                onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
-                }
-              />
-              Other
-            </label>
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 mt-[4rem]">
+      <div className="container mx-auto max-w-md animate-scale-in bg-card border glass-card p-6 rounded-lg shadow-lg text-card-foreground">
+        <h1 className="text-2xl font-bold mb-6">Create Account</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Input
+              type="text"
+              placeholder="Full Name"
+              required
+              value={formData.username}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
+            />
           </div>
-        </div>
-        <div>
-          <Input
-            type="password"
-            placeholder="Password"
-            required
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          <Input
-            type="password"
-            placeholder="Confirm Password"
-            required
-            value={formData.confirmPassword}
-            onChange={(e) =>
-              setFormData({ ...formData, confirmPassword: e.target.value })
-            }
-          />
-        </div>
-        <Button type="submit" className="w-full">
-          Sign Up
-        </Button>
-        <p className="text-center">
-          Already have an account?{" "}
-          <a href="/login" className="text-primary">
-            Login
-          </a>
-        </p>
-      </form>
+          <div>
+            <Input
+              type="email"
+              placeholder="Email"
+              required
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <Input
+              type="number"
+              placeholder="Age"
+              required
+              min="18"
+              value={formData.age}
+              onChange={(e) =>
+                setFormData({ ...formData, age: e.target.value })
+              }
+            />
+          </div>
+          <div className="p-2">
+            <label>Gender:</label>
+            <div className="radio-group flex gap-2">
+              <label>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  checked={formData.gender === "male"}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gender: e.target.value })
+                  }
+                />
+                Male
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  checked={formData.gender === "female"}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gender: e.target.value })
+                  }
+                />
+                Female
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="other"
+                  checked={formData.gender === "other"}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gender: e.target.value })
+                  }
+                />
+                Other
+              </label>
+            </div>
+          </div>
+          <div>
+            <Input
+              type="password"
+              placeholder="Password"
+              required
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <Input
+              type="password"
+              placeholder="Confirm Password"
+              required
+              value={formData.confirmPassword}
+              onChange={(e) =>
+                setFormData({ ...formData, confirmPassword: e.target.value })
+              }
+            />
+          </div>
+          <Button type="submit" className="w-full">
+            Sign Up
+          </Button>
+          <p className="text-center">
+            Already have an account?{" "}
+            <a href="/login" className="text-primary">
+              Login
+            </a>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

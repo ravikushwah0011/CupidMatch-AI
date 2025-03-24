@@ -1,8 +1,14 @@
-
 import { useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCog, faLock, faQuestionCircle, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCog,
+  faLock,
+  faQuestionCircle,
+  faSignOutAlt,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@/context/UserContext";
+import tabManager from "@/lib/tabManager";
 
 interface ProfileSidebarProps {
   isOpen: boolean;
@@ -10,13 +16,20 @@ interface ProfileSidebarProps {
   onTabChange: (tab: string) => void;
 }
 
-export default function ProfileSidebar({ isOpen, onClose, onTabChange }: ProfileSidebarProps) {
+export default function ProfileSidebar({
+  isOpen,
+  onClose,
+  onTabChange,
+}: ProfileSidebarProps) {
   const { logout } = useUser();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
         onClose();
       }
     }
@@ -31,7 +44,7 @@ export default function ProfileSidebar({ isOpen, onClose, onTabChange }: Profile
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+      className={`fixed top-[64px] right-0 bottom-0 w-20 md:w-64 bg-sidebar border-l shadow-lg transform transition-transform duration-300 ease-in-out ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
       ref={sidebarRef}
@@ -40,29 +53,41 @@ export default function ProfileSidebar({ isOpen, onClose, onTabChange }: Profile
         <button
           className="w-full p-3 flex items-center text-left hover:bg-neutral-100 rounded-lg"
           onClick={() => {
-            onTabChange("settings");
+            tabManager.setActiveTab("profile");
+            onClose();
+          }}
+        >
+          <FontAwesomeIcon icon={faUser} className="mr-3" />
+          Profile
+        </button>
+        <button
+          className="w-full p-3 flex items-center text-left hover:bg-neutral-100 rounded-lg"
+          onClick={() => {
+            tabManager.setActiveTab("settings");
             onClose();
           }}
         >
           <FontAwesomeIcon icon={faCog} className="mr-3" />
           Settings
         </button>
-        
+
         <button
           className="w-full p-3 flex items-center text-left hover:bg-neutral-100 rounded-lg"
           onClick={() => {
-            onTabChange("privacy");
+            // onTabChange("privacy");
+            tabManager.setActiveTab("privacy");
             onClose();
           }}
         >
           <FontAwesomeIcon icon={faLock} className="mr-3" />
           Privacy
         </button>
-        
+
         <button
           className="w-full p-3 flex items-center text-left hover:bg-neutral-100 rounded-lg"
           onClick={() => {
-            onTabChange("help");
+            // onTabChange("help");
+            tabManager.setActiveTab("help");
             onClose();
           }}
         >
@@ -71,7 +96,7 @@ export default function ProfileSidebar({ isOpen, onClose, onTabChange }: Profile
         </button>
 
         <hr className="my-4" />
-        
+
         <button
           className="w-full p-3 flex items-center text-left text-red-600 hover:bg-red-50 rounded-lg"
           onClick={handleLogout}

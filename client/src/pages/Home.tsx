@@ -77,7 +77,7 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
-      <header className="p-4 flex items-center justify-between border-b border-neutral-200">
+      {/* <header className="p-4 flex items-center justify-between border-b border-neutral-200">
         <div className="flex items-center">
           <img
             src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
@@ -101,7 +101,7 @@ export default function Home() {
             />
           </button>
         </div>
-      </header>
+      </header> */}
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto p-4 pb-20">
