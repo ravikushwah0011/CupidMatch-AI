@@ -27,6 +27,10 @@ import {
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import SettingsTab from "./SettingsTab"; // Import the new SettingsTab component
+import PrivacyTab from "./PrivacyTab"; // Import the new PrivacyTab component
+import HelpTab from "./HelpTab"; // Import the new HelpTab component
+import ProfileSidebar from "./ProfileSidebar"; // Import the new ProfileSidebar component
 
 interface UserProfileTab {
   id: "profile" | "settings" | "privacy" | "help";
@@ -53,6 +57,7 @@ export default function UserProfile() {
     interests: [] as string[],
     newInterest: "",
   });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar
 
   // Set initial form values when user data loads
   useState(() => {
@@ -203,6 +208,11 @@ export default function UserProfile() {
     }
   };
 
+  const handleProfilePhotoClick = () => {
+    setIsSidebarOpen(true);
+  };
+
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -224,7 +234,7 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-24 relative"> {/* Added relative for sidebar positioning */}
       {/* Header */}
       <header className="p-4 flex items-center justify-between border-b border-neutral-200">
         <h1 className="text-xl font-semibold">Profile</h1>
@@ -253,7 +263,6 @@ export default function UserProfile() {
               onClick={() => setActiveTab(tab.id)}
             >
               <FontAwesomeIcon icon={tab.icon} className="mr-1" />
-              {/* <i className={`fas ${tab.icon} mr-1`}></i> */}
               {tab.label}
             </button>
           ))}
@@ -266,9 +275,9 @@ export default function UserProfile() {
         {activeTab === "profile" && (
           <div className="space-y-6">
             {/* Profile Header */}
-            <div className="flex items-center">
+            <div className="flex items-center" onClick={handleProfilePhotoClick}> {/* Added click handler */}
               <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-neutral-200 overflow-hidden">
+                <div className="w-20 h-20 rounded-full bg-neutral-200 overflow-hidden cursor-pointer"> {/* Added cursor-pointer */}
                   {user.profileVideoUrl ? (
                     <video
                       src={user.profileVideoUrl}
@@ -290,7 +299,6 @@ export default function UserProfile() {
                     onClick={handleUploadVideo}
                   >
                     <FontAwesomeIcon icon={faVideo} className="text-xl" />
-                    {/* <i className="fas fa-video"></i> */}
                   </button>
                 )}
                 <Input
@@ -559,198 +567,23 @@ export default function UserProfile() {
         )}
 
         {/* Settings Tab */}
-        {activeTab === "settings" && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Account Settings</h2>
-
-            <div className="border border-neutral-200 rounded-lg divide-y">
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Account Information</h3>
-                  <p className="text-sm text-neutral-500">
-                    Update your account details
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Notifications</h3>
-                  <p className="text-sm text-neutral-500">
-                    Manage how we contact you
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Appearance</h3>
-                  <p className="text-sm text-neutral-500">
-                    Dark mode and theme options
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Change Password</h3>
-                  <p className="text-sm text-neutral-500">
-                    Update your password
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-            </div>
-
-            <Button
-              variant="destructive"
-              className="w-full"
-              onClick={handleLogout}
-            >
-              <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
-              Logout
-            </Button>
-          </div>
-        )}
+        {activeTab === "settings" && <SettingsTab />}
 
         {/* Privacy Tab */}
-        {activeTab === "privacy" && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Privacy Settings</h2>
-
-            <div className="border border-neutral-200 rounded-lg divide-y">
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Visibility</h3>
-                  <p className="text-sm text-neutral-500">
-                    Control who can see your profile
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Blocked Users</h3>
-                  <p className="text-sm text-neutral-500">
-                    Manage your blocked list
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Data & Privacy</h3>
-                  <p className="text-sm text-neutral-500">
-                    Manage your personal data
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-            </div>
-
-            <div className="border border-neutral-200 rounded-lg p-4">
-              <h3 className="font-medium mb-2">Delete Account</h3>
-              <p className="text-sm text-neutral-500 mb-3">
-                Permanently delete your account and all associated data. This
-                action cannot be undone.
-              </p>
-              <Button
-                onClick={handleAccountDelete.mutate}
-                variant="outline"
-                className="text-red-500 border-red-500"
-              >
-                Delete Account
-              </Button>
-            </div>
-          </div>
-        )}
+        {activeTab === "privacy" && <PrivacyTab />}
 
         {/* Help Tab */}
-        {activeTab === "help" && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Help & Support</h2>
+        {activeTab === "help" && <HelpTab />}
 
-            <div className="border border-neutral-200 rounded-lg divide-y">
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">FAQ</h3>
-                  <p className="text-sm text-neutral-500">
-                    Frequently asked questions
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Contact Support</h3>
-                  <p className="text-sm text-neutral-500">
-                    Get help with issues
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Report a Problem</h3>
-                  <p className="text-sm text-neutral-500">
-                    Let us know about bugs or issues
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-
-              <div className="p-4 flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">Safety Tips</h3>
-                  <p className="text-sm text-neutral-500">
-                    How to stay safe while dating
-                  </p>
-                </div>
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-neutral-400"
-                />
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Profile Sidebar */}
+        <ProfileSidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          onTabChange={(tab) => {
+            setActiveTab(tab as UserProfileTab["id"]);
+            setIsSidebarOpen(false);
+          }}
+        />
       </div>
 
       {/* <Navbar /> */}
