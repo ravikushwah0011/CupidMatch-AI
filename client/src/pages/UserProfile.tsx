@@ -27,10 +27,10 @@ import {
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import SettingsTab from "./SettingsTab"; // Import the new SettingsTab component
-import PrivacyTab from "./PrivacyTab"; // Import the new PrivacyTab component
-import HelpTab from "./HelpTab"; // Import the new HelpTab component
-import ProfileSidebar from "./ProfileSidebar"; // Import the new ProfileSidebar component
+import SettingsTab from "../components/SettingsTab"; // Import the new SettingsTab component
+import PrivacyTab from "../components/PrivacyTab"; // Import the new PrivacyTab component
+import HelpTab from "../components/HelpTab"; // Import the new HelpTab component
+import ProfileSidebar from "../components/ProfileSidebar"; // Import the new ProfileSidebar component
 
 interface UserProfileTab {
   id: "profile" | "settings" | "privacy" | "help";
@@ -212,7 +212,6 @@ export default function UserProfile() {
     setIsSidebarOpen(true);
   };
 
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -234,7 +233,9 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="min-h-screen pb-24 relative"> {/* Added relative for sidebar positioning */}
+    <div className="min-h-screen pb-24 relative">
+      {" "}
+      {/* Added relative for sidebar positioning */}
       {/* Header */}
       <header className="p-4 flex items-center justify-between border-b border-neutral-200">
         <h1 className="text-xl font-semibold">Profile</h1>
@@ -252,7 +253,6 @@ export default function UserProfile() {
           )}
         </div>
       </header>
-
       {/* Tab Navigation */}
       <div className="px-4 pt-4">
         <div className="flex border-b border-neutral-200">
@@ -268,16 +268,22 @@ export default function UserProfile() {
           ))}
         </div>
       </div>
-
       {/* Tab Content */}
       <div className="p-4">
         {/* Profile Tab */}
         {activeTab === "profile" && (
           <div className="space-y-6">
             {/* Profile Header */}
-            <div className="flex items-center" onClick={handleProfilePhotoClick}> {/* Added click handler */}
+            <div
+              className="flex items-center"
+              onClick={handleProfilePhotoClick}
+            >
+              {" "}
+              {/* Added click handler */}
               <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-neutral-200 overflow-hidden cursor-pointer"> {/* Added cursor-pointer */}
+                <div className="w-20 h-20 rounded-full bg-neutral-200 overflow-hidden cursor-pointer">
+                  {" "}
+                  {/* Added cursor-pointer */}
                   {user.profileVideoUrl ? (
                     <video
                       src={user.profileVideoUrl}
@@ -585,7 +591,6 @@ export default function UserProfile() {
           }}
         />
       </div>
-
       {/* <Navbar /> */}
     </div>
   );
