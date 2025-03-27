@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faFastForward, faPaperPlane, faSpinner } from "@fortawesome/free-solid-svg-icons";
+
+import { useUser } from "../context/UserContext";
 
 interface UserInput {
   key: string;
@@ -14,6 +16,7 @@ interface UserInput {
 }
 
 export default function ProfileCreation() {
+  const { user } = useUser();
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
@@ -39,7 +42,7 @@ export default function ProfileCreation() {
   const questions = [
     "What do you enjoy doing in your free time?",
     "What kind of relationship are you looking for?",
-    "Tell me a bit about yourself. What's your name and age?",
+    // "Tell me a bit about yourself. What's your name and age?",
     "Where are you located?",
     "What do you do for work?",
     "What's your education background?",
@@ -130,15 +133,15 @@ export default function ProfileCreation() {
         return "interests";
       case 2:
         return "lookingFor";
+      // case 3:
+      //   return "nameAge";
       case 3:
-        return "nameAge";
-      case 4:
         return "location";
-      case 5:
+      case 4:
         return "occupation";
-      case 6:
+      case 5:
         return "education";
-      case 7:
+      case 6:
         return "partnerQualities";
       default:
         return "other";
@@ -162,10 +165,10 @@ export default function ProfileCreation() {
       case 2: // Relationship type
         setOptions(["Long-term", "Casual", "Friendship", "Not sure yet"]);
         break;
-      case 3: // Name and age
-        setOptions([]); // No predefined options for name/age
-        break;
-      case 4: // Location
+      // case 3: // Name and age
+      //   setOptions([]); // No predefined options for name/age
+      //   break;
+      case 3: // Location
         setOptions([
           "New York",
           "Los Angeles",
@@ -176,7 +179,7 @@ export default function ProfileCreation() {
           "Seattle",
         ]);
         break;
-      case 5: // Occupation
+      case 4: // Occupation
         setOptions([
           "Software Engineer",
           "Designer",
@@ -187,7 +190,7 @@ export default function ProfileCreation() {
           "Entrepreneur",
         ]);
         break;
-      case 6: // Education
+      case 5: // Education
         setOptions([
           "High School",
           "Associate's Degree",
@@ -196,7 +199,7 @@ export default function ProfileCreation() {
           "PhD",
         ]);
         break;
-      case 7: // Partner qualities
+      case 6: // Partner qualities
         setOptions([
           "Kind",
           "Ambitious",
@@ -216,8 +219,9 @@ export default function ProfileCreation() {
     const data: Record<string, any> = {
       interests: [],
       lookingFor: "",
-      profileName: "",
-      age: 25,
+      profileName: user?.username,
+      age: user?.age,
+      gender: user?.gender,
       location: "",
       occupation: "",
       education: "",
@@ -279,7 +283,8 @@ export default function ProfileCreation() {
     <div className="h-screen flex flex-col p-6">
       <div className="flex justify-between items-center mb-6">
         <button className="text-neutral-600" onClick={handleBack}>
-          <i className="fas fa-arrow-left"></i>
+          {/* <i className="fas fa-arrow-left"></i> */}
+          <FontAwesomeIcon icon={faArrowLeft} />
         </button>
         <div className="h-1 flex-1 mx-4 bg-neutral-200 rounded-full overflow-hidden">
           <div
@@ -288,6 +293,7 @@ export default function ProfileCreation() {
           ></div>
         </div>
         <button className="text-neutral-600" onClick={handleSkip}>
+          <FontAwesomeIcon icon={faFastForward} />
           Skip
         </button>
       </div>

@@ -2,16 +2,24 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useUser } from "@/context/UserContext";
+import { Button } from "@/components/ui/button";
+
+// components
 import Navbar from "@/components/Navbar";
 import ProfileCard from "@/components/ProfileCard";
 import AiSuggestion from "@/components/AiSuggestion";
+import Sidebar from "@/components/Sidebar";
 import MatchPopup from "@/components/MatchPopup";
-import { Button } from "@/components/ui/button";
+import Matches from "@/components/Matches";
+import Messages from "@/components/Messages";
+
+// icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSliders } from "@fortawesome/free-solid-svg-icons";
 
 export default function Home() {
-  const [, navigate] = useLocation();
+  const [location , navigate] = useLocation();
+  const [activeTab, setActiveTab] = useState("discover");
   const { user, isAuthenticated } = useUser();
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [showMatchPopup, setShowMatchPopup] = useState(false);
@@ -20,6 +28,13 @@ export default function Home() {
     userId: number;
     matchedUserId: number;
   } | null>(null);
+
+  const showSidebar =
+    !location.includes("/onboarding") &&
+    !location.includes("/login") &&
+    !location.includes("/signup");
+  !location.includes("/profile-creation") &&
+    !location.includes("/profile-preview");
 
   // Redirect to onboarding if not authenticated
   useEffect(() => {
@@ -75,7 +90,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-24 flex bg-white">
       {/* Header */}
       {/* <header className="p-4 flex items-center justify-between border-b border-neutral-200">
         <div className="flex items-center">
@@ -103,9 +118,16 @@ export default function Home() {
         </div>
       </header> */}
 
+      {/* SideBar Component */}
+      {showSidebar && <Sidebar 
+        activeTab={activeTab} 
+        setCurrentTab={setActiveTab}
+      />}
+
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto p-4 pb-20">
-        {isLoading ? (
+      {activeTab === "discover" && ( 
+        isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
@@ -153,8 +175,19 @@ export default function Home() {
               We're working on finding your perfect match
             </p>
             <Button onClick={() => refetch()}>Refresh</Button>
-          </div>
+            </div>
+          )
         )}
+
+        {/* Matches User Components */}
+        {activeTab === "matches" && <Matches />}
+
+        {/* Messages User Components */}
+        {activeTab === "messages" && <Messages />}
+
+        {/* Ai Assistant Chat Components */}
+
+
       </main>
 
       {/* Match Popup */}

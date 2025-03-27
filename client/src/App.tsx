@@ -10,8 +10,7 @@ import Home from "@/pages/Home";
 import Onboarding from "@/pages/Onboarding";
 import ProfileCreation from "@/pages/ProfileCreation";
 import ProfilePreview from "@/pages/ProfilePreview";
-import Matches from "@/pages/Matches";
-import Messages from "@/pages/Messages";
+
 import Chat from "@/pages/Chat";
 import VideoCall from "@/pages/VideoCall";
 import VideoSchedule from "@/pages/VideoSchedule";
@@ -22,6 +21,7 @@ import Login from "./pages/Login";
 import Navbar from "@/components/Navbar"; // Import Navbar component
 import Sidebar from "@/components/Sidebar"; //Import Sidebar component
 import BottomBar from "./components/BottomBar";
+import ForgetPassword from "./pages/ForgetPassword";
 
 function Router() {
   return (
@@ -32,12 +32,11 @@ function Router() {
       <Route path="/signup" component={Signup} />
       <Route path="/profile-creation" component={ProfileCreation} />
       <Route path="/profile-preview" component={ProfilePreview} />
-      <Route path="/matches" component={Matches} />
-      <Route path="/messages" component={Messages} />
       <Route path="/chat/:matchId" component={Chat} />
       <Route path="/video-call/:matchId" component={VideoCall} />
       <Route path="/video-schedule/:matchId" component={VideoSchedule} />
       <Route path="/profile" component={UserProfile} />
+      <Route path="/forget-password" component={ForgetPassword} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -84,7 +83,7 @@ function App() {
         <Navbar />
         {/* {showSidebar && <Sidebar />} */}
         {/* <div className="max-w-md mx-auto min-h-screen bg-white shadow-lg mt-[4rem]"> */}
-        <div>
+        <div className="mt-[4rem] bg-red-50">
           <Router />
           <Toaster />
         </div>

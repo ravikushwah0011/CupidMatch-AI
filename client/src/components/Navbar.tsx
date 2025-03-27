@@ -32,8 +32,8 @@ export default function Navbar() {
     location === "/profile-creation" || location === "/profile-preview";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white border-b border-neutral-200 py-3 px-6 z-20">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
+    <nav className="fixed top-0 left-0 right-0 bg-white border-b border-neutral-200 py-3 px-4 z-20">
+      <div className="flex justify-between items-center">
         <div className="flex items-center gap-6">
           <Link href="/">
             <a className="text-xl font-bold text-primary">MatchAI</a>

@@ -5,48 +5,68 @@ import {
   faHeart,
   faComment,
   faRobot,
+  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "./ui/button";
 
-export default function Sidebar() {
+interface SidebarProps {
+  activeTab: string;
+  setCurrentTab: (tab: string) => void;
+}
+
+export default function Sidebar({
+  activeTab,
+  setCurrentTab,
+}: SidebarProps)
+ {
   return (
-    <div className="fixed top-[64px] bottom-0 w-20 md:w-64 bg-sidebar border-r border-neutral-200 p-4">
+    <div className="w-20 md:w-64 bg-sidebar border-r border-neutral-200 p-4">
       <div className="flex flex-col gap-4">
-        <Link href="/">
-          <a className="flex items-center gap-3 p-2 hover:bg-neutral-50 rounded-lg">
+      <Button
+            variant={activeTab === "discover" ? "secondary" : "link"}
+            className="w-full justify-start"
+            onClick={() => setCurrentTab("discover")}
+          >
             <FontAwesomeIcon
-              icon={faHome}
-              className="text-xl text-green-500 md:mr-2"
+              icon={faSearch}
+              className="text-xl text-primary md:mr-2"
             />
             <span className="hidden md:inline">Discover</span>
-          </a>
-        </Link>
-        <Link href="/matches">
-          <a className="flex items-center gap-3 p-2 hover:bg-neutral-50 rounded-lg">
+          </Button>
+        <Button
+            variant={activeTab === "matches" ? "secondary" : "ghost"}
+            className="w-full justify-start"
+            onClick={() => setCurrentTab("matches")}
+          >
             <FontAwesomeIcon
               icon={faHeart}
               className="text-xl text-primary md:mr-2"
             />
             <span className="hidden md:inline">Matches</span>
-          </a>
-        </Link>
-        <Link href="/messages">
-          <a className="flex items-center gap-3 p-2 hover:bg-neutral-50 rounded-lg">
+          </Button>
+        
+          <Button
+            variant={activeTab === "messages" ? "secondary" : "ghost"}
+            className="w-full justify-start"
+            onClick={() => setCurrentTab("messages")}
+          >
             <FontAwesomeIcon
               icon={faComment}
               className="text-xl text-blue-500 md:mr-2"
             />
             <span className="hidden md:inline">Messages</span>
-          </a>
-        </Link>
-        <Link href="/ai-assistant">
-          <a className="flex items-center gap-3 p-2 hover:bg-neutral-50 rounded-lg">
+          </Button>
+          <Button
+            variant={activeTab === "ai-assistant" ? "secondary" : "ghost"}
+            className="w-full justify-start"
+            onClick={() => setCurrentTab("ai-assistant")}
+          >
             <FontAwesomeIcon
               icon={faRobot}
               className="text-xl text-violet-500 md:mr-2"
             />
             <span className="hidden md:inline">AI Assistant</span>
-          </a>
-        </Link>
+          </Button>
       </div>
     </div>
   );

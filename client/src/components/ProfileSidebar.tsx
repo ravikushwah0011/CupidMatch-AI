@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCog,
@@ -44,14 +45,15 @@ export default function ProfileSidebar({
 
   return (
     <div
-      className={`fixed top-[64px] right-0 bottom-0 w-20 md:w-64 bg-sidebar border-l shadow-lg transform transition-transform duration-300 ease-in-out ${
+      className={`fixed top-[64px] right-0 w-20 md:w-64 bg-sidebar rounded-l-xl bg-white border-l shadow-lg transform transition-transform duration-300 ease-in-out ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
       ref={sidebarRef}
     >
       <div className="p-4 space-y-4">
-        <button
-          className="w-full p-3 flex items-center text-left hover:bg-neutral-100 rounded-lg"
+        <Button
+        variant={"ghost"}
+          className="w-full justify-start"
           onClick={() => {
             tabManager.setActiveTab("profile");
             onClose();
@@ -59,9 +61,10 @@ export default function ProfileSidebar({
         >
           <FontAwesomeIcon icon={faUser} className="mr-3" />
           Profile
-        </button>
-        <button
-          className="w-full p-3 flex items-center text-left hover:bg-neutral-100 rounded-lg"
+        </Button>
+        <Button
+        variant={"ghost"}
+          className="w-full justify-start"
           onClick={() => {
             tabManager.setActiveTab("settings");
             onClose();
@@ -69,10 +72,11 @@ export default function ProfileSidebar({
         >
           <FontAwesomeIcon icon={faCog} className="mr-3" />
           Settings
-        </button>
+        </Button>
 
-        <button
-          className="w-full p-3 flex items-center text-left hover:bg-neutral-100 rounded-lg"
+        <Button
+        variant={"ghost"}
+          className="w-full justify-start"
           onClick={() => {
             // onTabChange("privacy");
             tabManager.setActiveTab("privacy");
@@ -81,10 +85,11 @@ export default function ProfileSidebar({
         >
           <FontAwesomeIcon icon={faLock} className="mr-3" />
           Privacy
-        </button>
+        </Button>
 
-        <button
-          className="w-full p-3 flex items-center text-left hover:bg-neutral-100 rounded-lg"
+        <Button
+          variant={"ghost"}
+          className="w-full justify-start"
           onClick={() => {
             // onTabChange("help");
             tabManager.setActiveTab("help");
@@ -93,13 +98,17 @@ export default function ProfileSidebar({
         >
           <FontAwesomeIcon icon={faQuestionCircle} className="mr-3" />
           Help
-        </button>
+        </Button>
 
         <hr className="my-4" />
 
         <button
-          className="w-full p-3 flex items-center text-left text-red-600 hover:bg-red-50 rounded-lg"
-          onClick={handleLogout}
+          className="w-full p-3 flex items-center text-left text-red-600 hover:bg-red-50 rounded-lg "
+          onClick={() => {
+            handleLogout();
+            onClose();
+          }}
+          
         >
           <FontAwesomeIcon icon={faSignOutAlt} className="mr-3" />
           Logout

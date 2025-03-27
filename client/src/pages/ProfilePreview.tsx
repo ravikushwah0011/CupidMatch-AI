@@ -59,6 +59,7 @@ export default function ProfilePreview() {
       toast({
         title: "Success!",
         description: "Your profile has been created.",
+        variant: "success",
       });
     } catch (error) {
       toast({

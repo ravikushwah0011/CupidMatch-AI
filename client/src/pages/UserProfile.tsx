@@ -32,6 +32,7 @@ import PrivacyTab from "../components/PrivacyTab"; // Import the new PrivacyTab 
 import HelpTab from "../components/HelpTab"; // Import the new HelpTab component
 import ProfileSidebar from "../components/ProfileSidebar"; // Import the new ProfileSidebar component
 import tabManager from "../lib/tabManager"; // Import the new tabManager object
+import { profile } from "console";
 
 interface UserProfileTab {
   id: "profile" | "settings" | "privacy" | "help";
@@ -40,7 +41,7 @@ interface UserProfileTab {
 }
 
 export default function UserProfile() {
-  const [navigate] = useLocation();
+  const [, navigate] = useLocation();
   const { user, isLoading, updateProfile, logout } = useUser();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +57,7 @@ export default function UserProfile() {
     education: "",
     lookingFor: "",
     interests: [] as string[],
+    profileVideoUrl: "",
     newInterest: "",
   });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar
@@ -81,6 +83,7 @@ export default function UserProfile() {
         education: user.education || "",
         lookingFor: user.lookingFor,
         interests: [...user.interests],
+        profileVideoUrl: user.profileVideoUrl,
         newInterest: "",
       });
     }
@@ -112,6 +115,7 @@ export default function UserProfile() {
       education: user.education || "",
       lookingFor: user.lookingFor,
       interests: [...user.interests],
+      profileVideoUrl: user.profileVideoUrl,
       newInterest: "",
     });
 
@@ -130,6 +134,7 @@ export default function UserProfile() {
         education: editedProfile.education,
         lookingFor: editedProfile.lookingFor,
         interests: editedProfile.interests,
+        profileVideoUrl: editedProfile.profileVideoUrl,
       });
 
       setIsEditing(false);
@@ -210,6 +215,10 @@ export default function UserProfile() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       // In a real app, would upload to a server and get back a URL
+      setEditedProfile({
+        ...editedProfile,
+        profileVideoUrl: URL.createObjectURL(e.target.files[0]),
+      });
       toast({
         title: "Video uploaded",
         description: "Your profile video has been updated",
@@ -242,7 +251,7 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="min-h-screen pb-24 relative">
+    <div className="container bg-white shadow-lg rounded-xl mx-auto min-h-screen pb-24">
       {" "}
       {/* Added relative for sidebar positioning */}
       {/* Header */}
@@ -266,14 +275,14 @@ export default function UserProfile() {
       {/* <div className="px-4 pt-4">
         <div className="flex border-b border-neutral-200">
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab.id}
               className={`flex-1 pb-3 text-center text-sm ${activeTab === tab.id ? "border-b-2 border-primary text-primary font-medium" : "text-neutral-500"}`}
               onClick={() => setActiveTab(tab.id)}
             >
               <FontAwesomeIcon icon={tab.icon} className="mr-1" />
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div> */}
@@ -284,7 +293,7 @@ export default function UserProfile() {
           <div className="space-y-6">
             {/* Profile Header */}
             <div
-              className="flex items-center"
+              className="flex items-center pb-6 border-b"
               onClick={handleProfilePhotoClick}
             >
               {" "}
@@ -309,12 +318,12 @@ export default function UserProfile() {
                   )}
                 </div>
                 {isEditing && (
-                  <button
-                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-md"
+                  <Button
+                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-white text-primary hover:text-white flex items-center justify-center shadow-md"
                     onClick={handleUploadVideo}
                   >
                     <FontAwesomeIcon icon={faVideo} className="text-xl" />
-                  </button>
+                  </Button>
                 )}
                 <Input
                   type="file"
@@ -394,7 +403,7 @@ export default function UserProfile() {
 
             {/* Profile Details */}
             <div className="space-y-4">
-              <div>
+              <div className="pb-5 border-b">
                 <h3 className="font-semibold mb-2">About Me</h3>
                 {isEditing ? (
                   <Textarea
@@ -415,7 +424,7 @@ export default function UserProfile() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 pb-5 border-b">
                 <div className="space-y-1">
                   <div className="text-sm text-neutral-500">Location</div>
                   {isEditing ? (
@@ -518,7 +527,7 @@ export default function UserProfile() {
                 </div>
               </div>
 
-              <div>
+              <div className="pb-5">
                 <h3 className="font-semibold mb-2">Interests</h3>
                 {isEditing ? (
                   <>
@@ -529,12 +538,12 @@ export default function UserProfile() {
                           className="bg-neutral-100 px-3 py-1 rounded-full text-sm flex items-center"
                         >
                           {interest}
-                          <button
+                          <Button
                             className="ml-2 text-neutral-500 hover:text-red-500"
                             onClick={() => handleRemoveInterest(interest)}
                           >
                             <FontAwesomeIcon icon={faTimes} />
-                          </button>
+                          </Button>
                         </div>
                       ))}
                     </div>

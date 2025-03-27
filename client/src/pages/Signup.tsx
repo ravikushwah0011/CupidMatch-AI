@@ -53,9 +53,9 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 mt-[4rem]">
-      <div className="container mx-auto max-w-md animate-scale-in bg-card border glass-card p-6 rounded-lg shadow-lg text-card-foreground">
-        <h1 className="text-2xl font-bold mb-6">Create Account</h1>
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6">
+      <div className="container animate-scale-in mx-auto max-w-md bg-card border glass-card p-6 rounded-lg shadow-lg text-card-foreground">
+        <h1 className="text-2xl font-bold mb-6 text-center">Create Account</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Input
@@ -94,7 +94,7 @@ export default function Signup() {
           <div className="p-2">
             <label>Gender:</label>
             <div className="radio-group flex gap-2">
-              <label>
+              <label className="flex gap-1 items-center">
                 <input
                   type="radio"
                   name="gender"
@@ -107,7 +107,7 @@ export default function Signup() {
                 Male
               </label>
 
-              <label>
+              <label className="flex gap-1 items-center">
                 <input
                   type="radio"
                   name="gender"
@@ -120,7 +120,7 @@ export default function Signup() {
                 Female
               </label>
 
-              <label>
+              <label className="flex gap-1 items-center">
                 <input
                   type="radio"
                   name="gender"

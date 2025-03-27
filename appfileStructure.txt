@@ -1,0 +1,41 @@
+.breakpoints
+.gitignore
+.replit
+drizzle.config.ts
+fm
+generated-icon.png
+package.json
+postcss.config.js
+tailwind.config.ts
+theme.json
+tsconfig.json
+vite.config.ts
+client/
+    index.html
+    src/
+        App.tsx
+        index.css
+        main.tsx
+        components/
+            AiSuggestion.tsx
+            BottomBar.tsx
+            HelpTab.tsx
+            MatchPopup.tsx
+            MessageBubble.tsx
+            Navbar.tsx
+            ...
+        context/
+            UserContext.tsx
+        hooks/
+        lib/
+        pages/
+server/
+    db.ts
+    gemini.ts
+    index.ts
+    openai.ts
+    routes.ts
+    storage.ts
+    vite.ts
+shared/
+    schema.ts

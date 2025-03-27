@@ -17,9 +17,9 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="h-screen flex flex-col p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-poppins font-semibold text-neutral-900">
+    <div className="h-screen flex items-center flex-col p-6">
+      <div className="flex justify-between mb-6">
+        <h1 className="text-2xl font-poppins text-center font-semibold text-neutral-900">
           Welcome to{" "}
           <span className="text-primary">
             Match<span className="text-blue-600">AI</span>

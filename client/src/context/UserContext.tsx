@@ -26,6 +26,7 @@ interface LoginData {
 
 interface RegisterData {
   username: string;
+  email: string;
   password: string;
   profileName: string;
   age: number;
@@ -72,6 +73,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       toast({
         title: "Login successful",
         description: "Welcome back!",
+        variant: "success",
       });
     },
     onError: (error) => {
@@ -93,6 +95,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       toast({
         title: "Registration successful",
         description: "Your account has been created",
+        variant: "success",
       });
     },
     onError: (error) => {
@@ -114,6 +117,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       toast({
         title: "Logged out",
         description: "You have been logged out successfully",
+        variant: "success",
       });
     },
     onError: (error) => {
@@ -135,6 +139,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully",
+        variant: "success",
       });
     },
     onError: (error) => {
